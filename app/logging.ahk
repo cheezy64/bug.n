@@ -18,7 +18,7 @@ class Logging {
 ;;   INFO     = 4
 ;;   DEBUG    = 5
 
-  __New(labels := ";CRITICAL;ERROR;WARNING;INFO;DEBUG", level := 5, timeFormat := "yyyy-MM-dd HH:mm:ss") {
+  __New(labels := ";CRITICAL;ERROR;WARNING;INFO;DEBUG", level := 3, timeFormat := "yyyy-MM-dd HH:mm:ss") {
     this.labels := StrSplit(labels, ";")
     this.level := level
     this.timeFormat := timeFormat
