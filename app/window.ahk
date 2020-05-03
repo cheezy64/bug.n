@@ -1,6 +1,6 @@
 /*
-:title:     bug.n/window
-:copyright: (c) 2018-2019 by joten <https://github.com/joten>
+:title:     bug.n-x.min/window
+:copyright: (c) 2018-2020 by joten <https://github.com/joten>
 :license:   GNU General Public License version 3
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
@@ -14,9 +14,8 @@ class Window extends Rectangle {
     this.id := Format("0x{:x}", winId)
     
     ;; Attributes
-    this.desktop := ""
     this.isFloating := True
-    this.workArea := ""
+    this.workGroup := ""
     
     DetectHiddenWindows, On
     WinGetClass, winClass, % "ahk_id " . this.id
@@ -38,7 +37,7 @@ class Window extends Rectangle {
     this.parentId    := Format("0x{:x}", DllCall("GetParent", "UInt", this.id))
     ;; `isElevated` <- jeeswg: How would I mimic the windows Alt+Esc hotkey in AHK? (https://autohotkey.com/boards/viewtopic.php?p=134910&sid=192dd8fcd7839b6222826561491fcd57#p134910)
     
-    logger.debug("New window with id <mark>" . this.id . "</mark> and class <mark>" . this.class . "</mark> (<mark>" . winClass . "</mark>) added.", "Window.__New")
+    logger.debug("New window with id ``" . this.id . "`` and class ``" . this.class . "`` (``" . winClass . "``) added.", "Window.__New")
   }
   
   getPosEx() {
@@ -136,12 +135,15 @@ class Window extends Rectangle {
   hasCaption[] {
     get {
       Global const
+			WinGet, winStyle, Style, % "ahk_id " . this.id
+			this.style   := winStyle
       Return, (this.style & const.WS_CAPTION)
     }
   }
   
   information[] {
     get {
+			this.getProperties(True)
       Return, "Id:    `t" . this.id
         . "`nTitle:   `t" . SubStr(this.title, 1, 51) . (StrLen(this.title) > 51 ? "..." : "")
         . "`nClass:   `t" . this.class
@@ -152,17 +154,16 @@ class Window extends Rectangle {
         . "`nProcess Name: `t" . this.pName
         . "`nProcess Path: `t" . SubStr(this.pPath, 1, 46) . (StrLen(this.pPath) > 46 ? "..." : "")
         . "`n"
-        . "`nHas Caption:      `t" . (this.hasCaption ? "yes" : "no")
-        . "`nIs App Window:    `t" . (this.isAppWindow ? "yes" : "no")
-        . "`nIs Child:         `t" . (this.isChild ? "yes" : "no")
-        . "`nIs Cloaked:       `t" . (this.isCloaked ? "yes" : "no")
-        . "`nIs Elevated:      `t" . (this.isElevated ? "yes" : "no")
-        . "`nIs Ghost:         `t" . (this.isGhost ? "yes" : "no")
-        . "`nIs Popup:         `t" . (this.isPopup ? "yes" : "no")
+        . "`nHas Caption:      `t" . (this.hasCaption  	? "yes" : "no")
+        . "`nIs App Window:    `t" . (this.isAppWindow 	? "yes" : "no")
+        . "`nIs Child:         `t" . (this.isChild     	? "yes" : "no")
+        . "`nIs Cloaked:       `t" . (this.isCloaked   	? "yes" : "no")
+        . "`nIs Elevated:      `t" . (this.isElevated  	? "yes" : "no")
+        . "`nIs Ghost:         `t" . (this.isGhost      ? "yes" : "no")
+        . "`nIs Popup:         `t" . (this.isPopup 			? "yes" : "no")
         . "`nIs Min/Maximized: `t" . (this.minMax == -1 ? "min" : this.minMax == 1 ? "max" : "no")
         . "`n"
-        . "`nIs Floating:      `t" . (this.isFloating ? "yes" : "no")
-        . "`nWork Area Index:  `t" . (IsObject(this.workArea) ? this.workArea.index : 0)
+        . "`nWork Group Index:  `t" . (IsObject(this.workGroup) ? this.workGroup.index : 0)
     }
   }
   
@@ -200,7 +201,7 @@ class Window extends Rectangle {
     SendMessage, const.WM_NULL,,,, % "ahk_id " . this.id
     DetectHiddenWindows, Off
     If (ErrorLevel == "FAIL" && funcName != "") {
-      logger.warning("Window with id <mark>" . this.id . "</mark> seems unresponsive.", funcName)
+      logger.warning("Window with id ``" . this.id . "`` seems unresponsive.", funcName)
     }
 
     Return, (ErrorLevel == "FAIL")
@@ -217,7 +218,7 @@ class Window extends Rectangle {
   
   move(x, y, w, h) {
     Global const, logger
-    logger.debug("Moving window with id <mark>" . this.id . "</mark>, x: " . this.x . " -> " . x . ", y: " . this.y . " -> " . y . ", width: " . this.w . " -> " . w . ", height: " . this.h . " -> " . h . ".", "Window.move")
+    logger.debug("Moving window with id ``" . this.id . "``, x: " . this.x . " -> " . x . ", y: " . this.y . " -> " . y . ", width: " . this.w . " -> " . w . ", height: " . this.h . " -> " . h . ".", "Window.move")
     If (this.isUnresponsive("Window.move")) {
       Return, 1
     } Else If (this.getPosEx() && this.match(new Rectangle(x, y, w, h), True)) {
@@ -243,7 +244,7 @@ class Window extends Rectangle {
   runCommand(str) {
     Global const, logger
     
-    logger.debug("Running command <b>" . str . "</b> on window with id <mark>" . this.id . "</mark>.", "Window.runCommand")
+    logger.debug("Running command **" . str . "** on window with id ``" . this.id . "``.", "Window.runCommand")
     If (this.isUnresponsive("Window." . str)) {
       Return, 1
     } Else If (str == "activate") {

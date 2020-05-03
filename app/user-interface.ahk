@@ -1,16 +1,16 @@
 /*
-:title:     bug.n/user-interfaces/tray-icon-user-interface
-:copyright: (c) 2019 by joten <https://github.com/joten>
+:title:     bug.n-x.min/user-interface
+:copyright: (c) 2019-2020 by joten <https://github.com/joten>
 :license:   GNU General Public License version 3
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
 without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-class TrayIconUserInterface {
+class UserInterface {
   __New(index) {
     this.index := index
-    this.name := "TrayIconUserInterface"
+    this.name := "UserInterface"
     
     this.appCallFuncObject := ObjBindMethod(this, "_onAppCall")
     this.items := {"bar": {}, "content": {"tip": "01"}}
@@ -31,7 +31,7 @@ class TrayIconUserInterface {
     } Else If FileExist(this.icon) {
       Menu, Tray, Icon, % this.icon
     } Else {
-      logger.warning("Icon file <mark>" . this.icon . "</mark> not found.", "TrayIconUserInterface.__New")
+      logger.warning("Icon file ``" . this.icon . "`` not found.", "UserInterface.__New")
     }
     Menu, Tray, Icon
     
@@ -40,11 +40,11 @@ class TrayIconUserInterface {
       If (updateInterval > 0) {
         funcObject := ObjBindMethod(this, "updateItems", part)
         SetTimer, % funcObject, % updateInterval
-        logger.debug("Timer for updating items in User Interface #" . this.index . " (part <i>" . part . "</i>) set to " . updateInterval . " milliseconds.", "TrayIconUserInterface._init")
+        logger.debug("Timer for updating items in User Interface #" . this.index . " (part _" . part . "_) set to " . updateInterval . " milliseconds.", "UserInterface._init")
       }
     }
     
-    logger.info("Tray menu set with tooltip, icon and main window.", "TrayIconUserInterface.__New")
+    logger.info("Tray menu set with tooltip, icon and main window.", "UserInterface.__New")
   }
   
   _onAppCall(uri) {

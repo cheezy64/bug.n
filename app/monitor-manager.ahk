@@ -1,6 +1,6 @@
 /*
-:title:     bug.n/monitor-manager
-:copyright: (c) 2019 by joten <https://github.com/joten>
+:title:     bug.n-x.min/monitor-manager
+:copyright: (c) 2019-2020 by joten <https://github.com/joten>
 :license:   GNU General Public License version 3
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
@@ -8,7 +8,7 @@ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 */
 
 class MonitorManager {
-  __New(funcObject) {
+  __New(funcObject := "") {
     Global const, logger
     
     this.monitors := []
@@ -21,7 +21,7 @@ class MonitorManager {
     ;; InnI: Get per-monitor DPI scaling factor (https://www.autoitscript.com/forum/topic/189341-get-per-monitor-dpi-scaling-factor/?tab=comments#comment-1359832)
     ;; Evaluating `DllCall("SHcore\SetProcessDpiAwareness", "UInt", const.PROCESS_PER_MONITOR_DPI_AWARE)` resulted in an access violation.
     ;; Setting `DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE` did work without errors, but does it have an effect?
-    logger.debug("Dll <i>User32\SetProcessDpiAwarenessContext</i> called with result <mark>" . result . "</mark>.", "MonitorManager.__New")
+    logger.debug("Dll _User32\SetProcessDpiAwarenessContext_ called with result ``" . result . "``.", "MonitorManager.__New")
     
     ;; Enumerate and synchronizing display/ AutoHotkey monitors.
     ptr := A_PtrSize ? "Ptr" : "UInt"
@@ -30,8 +30,10 @@ class MonitorManager {
     logger.info(this.monitors.Length() . " display monitor" . (this.monitors.Length() == 1 ? "" : "s") . " found.", "MonitorManager.__New")
     this.enumAutoHotkeyMonitors()
     
-    OnMessage(const.WM_DISPLAYCHANGE, funcObject)
-    logger.info("Window message <b>WM_DISPLAYCHANGE</b> registered.", "MonitorManager.__New")
+		If (funcObject != "") {
+			OnMessage(const.WM_DISPLAYCHANGE, funcObject)
+			logger.info("Window message ``WM_DISPLAYCHANGE`` registered.", "MonitorManager.__New")
+		}
   }
   
   enumAutoHotkeyMonitors() {
@@ -40,7 +42,7 @@ class MonitorManager {
     Global logger
     
     SysGet, n, MonitorCount
-    logger.info(n . " monitor" . (n == 1 ? "" : "s") . " found by <i>AutoHotkey</i>.", "MonitorManager.enumAutoHotkeyMonitors")
+    logger.info(n . " monitor" . (n == 1 ? "" : "s") . " found by _AutoHotkey_.", "MonitorManager.enumAutoHotkeyMonitors")
     Loop, % n {
       SysGet, name, MonitorName, % A_Index
       SysGet, rect, Monitor, % A_Index
@@ -49,12 +51,12 @@ class MonitorManager {
       key := rectLeft . "-" . rectTop . "-" . rectRight . "-" . rectBottom
       If (this.monitorIndices.HasKey(key)) {
         i := this.monitorIndices[key]
-        logger.debug("Monitor with key <mark>" . key . "</mark> found by <i>AutoHotkey</i> already at index <mark>" . i . "</mark>.", "MonitorManager.enumAutoHotkeyMonitors")
+        logger.debug("Monitor with key ``" . key . "`` found by _AutoHotkey_ already at index ``" . i . "``.", "MonitorManager.enumAutoHotkeyMonitors")
       } Else {
         i := this.monitors.Length() + 1
         
         ;; Appending additional monitors not previously found.
-        logger.debug("Additional monitor with key <mark>" . key . "</mark> found by <i>AutoHotkey</i>.", "MonitorManager.enumAutoHotkeyMonitors")
+        logger.debug("Additional monitor with key ``" . key . "`` found by _AutoHotkey_.", "MonitorManager.enumAutoHotkeyMonitors")
         this.monitors[i] := New this.Monitor(i, 0, rectLeft, rectTop, rectRight, rectBottom)
         this.monitorIndices[key]  := i
       }
@@ -68,7 +70,7 @@ class MonitorManager {
     SysGet, i, MonitorPrimary
     this.monitors[i].isPrimary    := True
     this.primaryMonitor := i
-    logger.info("Monitor <b>" . i . "</b> found to be the <b>primary monitor</b>.", "MonitorManager.enumAutoHotkeyMonitors")
+    logger.info("Monitor ``" . i . "`` found to be the **primary monitor**.", "MonitorManager.enumAutoHotkeyMonitors")
   }
   
   class Monitor extends Rectangle {
@@ -95,7 +97,7 @@ class MonitorManager {
       this.scaleX := this.dpiX / 96
       this.scaleY := this.dpiY / 96
       
-      logger.info("Monitor with key <mark>" . this.key . "</mark> added at index <mark>" . this.index . "</mark>.", "Monitor.__New")
+      logger.info("Monitor with key ``" . this.key . "`` added at index ``" . this.index . "``.", "Monitor.__New")
     }
     
     getDpiForMonitor() {

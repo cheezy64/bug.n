@@ -1,6 +1,6 @@
 /*
-:title:     bug.n/logging
-:copyright: (c) 2019 by joten <https://github.com/joten>
+:title:     bug.n-x.min/logging
+:copyright: (c) 2019-2020 by joten <https://github.com/joten>
 :license:   GNU General Public License version 3
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
@@ -18,13 +18,13 @@ class Logging {
 ;;   INFO     = 4
 ;;   DEBUG    = 5
 
-  __New(labels := ";CRITICAL;ERROR;WARNING;INFO;DEBUG", level := 3, timeFormat := "yyyy-MM-dd HH:mm:ss") {
+  __New(labels := ";CRITICAL;ERROR;WARNING;INFO;DEBUG", level := 5, timeFormat := "yyyy-MM-dd HH:mm:ss") {
     this.labels := StrSplit(labels, ";")
     this.level := level
     this.timeFormat := timeFormat
     
     this.cache := []    ;; This is the object, which has to be written and emptied afterwards from outside this class.
-    this.info("Logging started on level <mark>" . this.labels[this.level + 1] . "</mark>.", "Logging.__New")
+    this.info("Logging started on level ``" . this.labels[this.level + 1] . "``.", "Logging.__New")
   }
   
   getTimestamp() {
@@ -70,7 +70,27 @@ class Logging {
     level := Min(Max(level + delta, 1), this.labels.Length() - 1)
     If (level != this.level) {
       this.level := level
-      this.log("Level set to <mark>" . this.labels[level + 1] . "</mark>.", "Logging.setLevel")
+      this.log("Level set to ``" . this.labels[level + 1] . "``.", "Logging.setLevel")
     }
   }
+	
+	writeCacheToFile(filename := "") {
+		If (filename == "") {
+			FormatTime, timestamp, , % "yyyy-MM-dd_HH-mm-ss"
+			FileSelectFile, filename, % "S26", % A_WorkingDir . "\..\bug.n-log_" . timestamp . ".md", % "bug.n - Write Cache to File"
+		}
+		If (filename != "") {
+			text := ""
+			For i, item in this.cache {
+				;; timestamp, level, src, msg
+				text .= Format("{:19}", item[1]) . " "
+							. Format("{:-8}", item[2]) . " "
+							. (item[3] != "" ? "_" . item[3] . "_" : "") . " "
+							. item[4] . "`n"
+			}
+			FileDelete, % filename
+			FileAppend, % text, % filename
+			Run, % "open " . filename
+		}
+	}
 }
