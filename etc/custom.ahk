@@ -45,10 +45,11 @@ class Customizations {
     ;; If (A_ComputerName == <computer name>) {
     ;; }
     
-    cfg.defaultLayouts := [{symbol: "[M]", name: "DwmMonocleLayout"}
-                         , {symbol: "[]=", name: "DwmTileLayout", mfact: 0.65, nmaster: 1}
-                         , {symbol: "TTT", name: "DwmBottomStackLayout", mfact: 0.55, nmaster: 1}
-                         , {symbol: "><>", name: "FloatingLayout"}]
+    ;cfg.defaultLayouts := [{symbol: "[M]", name: "DwmMonocleLayout"}
+    ;                     , {symbol: "[]=", name: "DwmTileLayout", mfact: 0.65, nmaster: 1}
+    ;                     , {symbol: "TTT", name: "DwmBottomStackLayout", mfact: 0.55, nmaster: 1}
+    ;                     , {symbol: "><>", name: "FloatingLayout"}]
+    cfg.defaultLayouts := [{symbol: "><>", name: "FloatingLayout"}]
     cfg.defaultSystemStatusBarItems := {battery: 21, volume: 22, date: 23, time: 24}
     cfg.windowManagementRules := [{windowProperties: {desktop: 0}, break: True}   ;; Exclude hidden (?) windows.
       , {windowProperties: {class: "#32770", isPopup: True}, break: True}         ;; Exclude pop-up windows.
@@ -97,15 +98,22 @@ class Customizations {
     ;funcObject := ObjBindMethod(mgr, "switchToLayout", (A_ComputerName == "GD-000358-NBK00" ? 2 : 1))
     ;Hotkey, #m, %funcObject%
     ;funcObject := ObjBindMethod(mgr, "switchToLayout", (A_ComputerName == "GD-000358-NBK00" ? 3 : 2))
+
     Hotkey, #t, Off
+    Hotkey, #m, Off
+    Hotkey, #b, Off
+    Hotkey, #f, Off
+    Hotkey, #Backspace, Off
+    Hotkey, #+Backspace, Off
+    Hotkey, #Space, Off
 
     Hotkey, #Left, Off
     Hotkey, #Right, Off
     Hotkey, #Down, Off
     Hotkey, #Up, Off
-    
   }
 }
+
 #5::mgr.switchToDesktop(5)
 #6::mgr.switchToDesktop(6)
 #7::mgr.switchToDesktop(7)
@@ -116,3 +124,11 @@ class Customizations {
 #+7::mgr.moveWindowToDesktop(, 7)
 #+8::mgr.moveWindowToDesktop(, 8)
 #+9::mgr.moveWindowToDesktop(, 9)
+
+#^+=::  Winset, Alwaysontop, , A
+
+; This didn't seem to work
+; #h::SendInput, #Left
+; #j::SendInput, #Down
+; #k::SendInput, #Right
+; #u::SendInput, #Up
