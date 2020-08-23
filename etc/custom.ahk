@@ -125,10 +125,14 @@ class Customizations {
 #+8::mgr.moveWindowToDesktop(, 8)
 #+9::mgr.moveWindowToDesktop(, 9)
 
-#^+=::  Winset, Alwaysontop, , A
+#^+=::Winset, Alwaysontop, , A
 
-; This didn't seem to work
-; #h::SendInput, #Left
-; #j::SendInput, #Down
-; #k::SendInput, #Right
-; #u::SendInput, #Up
+^+9::^+F9
+^+0::^+F10
+^+-::^+F11
+^+=::^+F12
+
+#h::#Left
+#j::#Down
+#k::#Right
+#u::#Up
