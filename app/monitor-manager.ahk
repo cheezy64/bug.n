@@ -136,10 +136,10 @@ class MonitorManager {
 ;; Using an `ObjBindMethod` as the function reference in `RegisterCallback` did not work.
 ;; The object reference could be passed via `A_EventInfo`.
 MonitorEnumProc(hMonitor, hdcMonitor, lprcMonitor, dwData) {
-  rectLeft    := NumGet(lprcMonitor + 0,  0, "UInt")
-  rectTop     := NumGet(lprcMonitor + 0,  4, "UInt")
-  rectRight   := NumGet(lprcMonitor + 0,  8, "UInt")
-  rectBottom  := NumGet(lprcMonitor + 0, 12, "UInt")
+  rectLeft    := NumGet(lprcMonitor + 0,  0, "Int")
+  rectTop     := NumGet(lprcMonitor + 0,  4, "Int")
+  rectRight   := NumGet(lprcMonitor + 0,  8, "Int")
+  rectBottom  := NumGet(lprcMonitor + 0, 12, "Int")
   
   this := Object(A_EventInfo)
   ;; Helgef: Allow RegisterCallback with BoundFunc objects (https://www.autohotkey.com/boards/viewtopic.php?p=235243#p235243)
